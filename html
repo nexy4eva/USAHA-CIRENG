@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cireng El</title>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+.fade-in { animation: fadeIn 1s ease-in-out; }
+@keyframes fadeIn {
+from {opacity:0; transform:translateY(10px);}
+to {opacity:1; transform:translateY(0);}
+}
+.badge{
+position:absolute;
+top:10px;
+left:10px;
+color:white;
+padding:4px 8px;
+font-size:12px;
+border-radius:6px;
+}
+</style>
+</head>
+
+<body class="bg-gradient-to-br from-blue-50 to-green-50">
+
+<!-- HEADER -->
+<div class="text-center py-6 fade-in">
+<h1 class="text-3xl font-bold text-blue-600">Cireng Mang Ujang</h1>
+<p class="text-gray-600">5 Varian Cireng Lezat & Gurih</p>
+</div>
+
+<!-- PRODUK -->
+<div id="produkList" class="max-w-6xl mx-auto grid md:grid-cols-3 gap-6 p-4"></div>
+
+<!-- CART -->
+<div class="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow">
+
+<h2 class="text-xl font-bold text-green-600">Keranjang</h2>
+<div id="cart"></div>
+
+<p class="mt-4 font-bold">Total: Rp <span id="total">0</span></p>
+
+<button onclick="checkout()"
+class="w-full mt-4 bg-green-500 text-white py-3 rounded hover:scale-105">
+Checkout WhatsApp
+</button>
+
+</div>
+
+<!-- DATA -->
+<div class="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow mt-6">
+<h2 class="font-bold">Data Pembeli</h2>
+<input id="nama" placeholder="Nama" class="input">
+<textarea id="alamat" placeholder="Alamat" class="input"></textarea>
+</div>
+
+<script>
+let produk = [
+{
+nama:"Cireng Ayam Pedas",
+harga:10000,
+promo:8000,
+best:true,
+img:"https://via.placeholder.com/300x200?text=Ayam+Pedas"
+},
+{
+nama:"Cireng Keju Lumer",
+harga:9000,
+promo:null,
+best:false,
+img:"https://via.placeholder.com/300x200?text=Keju+Lumer"
+},
+{
+nama:"Cireng Sosis BBQ",
+harga:11000,
+promo:9000,
+best:true,
+img:"https://via.placeholder.com/300x200?text=Sosis+BBQ"
+},
+{
+nama:"Cireng Original Gurih",
+harga:7000,
+promo:null,
+best:false,
+img:"https://via.placeholder.com/300x200?text=Original"
+},
+{
+nama:"Cireng Mozzarella",
+harga:12000,
+promo:10000,
+best:true,
+img:"https://via.placeholder.com/300x200?text=Mozzarella"
+}
+];
+
+let cart = [];
+
+function renderProduk(){
+let html="";
+produk.forEach((p,i)=>{
+
+let badge="";
+if(p.best){
+badge = `<div class="badge bg-red-500">BEST SELLER</div>`;
+}else if(p.promo){
+badge = `<div class="badge bg-green-500">PROMO</div>`;
+}
+
+let hargaHTML = p.promo 
+? `<p class="line-through text-gray-400 text-sm">Rp ${p.harga.toLocaleString()}</p>
+   <p class="text-green-600 font-bold">Rp ${p.promo.toLocaleString()}</p>`
+: `<p class="text-green-600 font-bold">Rp ${p.harga.toLocaleString()}</p>`;
+
+html += `
+<div class="bg-white rounded-xl shadow hover:scale-105 transition overflow-hidden relative">
+
+${badge}
+
+<img src="${p.img}" class="w-full h-40 object-cover">
+
+<div class="p-4">
+<h2 class="font-bold">${p.nama}</h2>
+
+${hargaHTML}
+
+<input type="number" min="1" value="1" id="qty${i}" class="input">
+
+<button onclick="tambahCart(${i})"
+class="mt-2 w-full bg-green-500 text-white py-2 rounded">
+Tambah
+</button>
+</div>
+</div>`;
+});
+
+document.getElementById("produkList").innerHTML = html;
+}
+
+function tambahCart(i){
+let qty = document.getElementById("qty"+i).value;
+let hargaFinal = produk[i].promo ? produk[i].promo : produk[i].harga;
+
+cart.push({...produk[i], qty, hargaFinal});
+renderCart();
+}
+
+function renderCart(){
+let html="";
+let total=0;
+
+cart.forEach(item=>{
+let sub = item.hargaFinal * item.qty;
+total += sub;
+
+html += `
+<div class="flex justify-between border-b py-2">
+<span>${item.nama} x${item.qty}</span>
+<span>Rp ${sub.toLocaleString()}</span>
+</div>`;
+});
+
+document.getElementById("cart").innerHTML = html;
+document.getElementById("total").innerText = total.toLocaleString();
+}
+
+function checkout(){
+let text="*ORDER CIRING MANG UJANG*\n\n";
+
+cart.forEach(item=>{
+text += `${item.nama} x${item.qty}\n`;
+});
+
+text += `\nTotal: Rp ${total.innerText}\n`;
+text += `Nama: ${nama.value}\nAlamat: ${alamat.value}`;
+
+window.open(`https://wa.me/6282125118121?text=${encodeURIComponent(text)}`);
+renderProduk();
+}
+</script>
+
+<style>
+.input{
+width:100%;
+padding:10px;
+border:1px solid #ddd;
+border-radius:8px;
+margin-top:8px;
+}
+</style>
+
+</body>
+</html>
